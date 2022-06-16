@@ -24,6 +24,7 @@ import com.ruoyi.common.utils.StringUtils;
 @RequestMapping("/monitor/cache")
 public class CacheController
 {
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
