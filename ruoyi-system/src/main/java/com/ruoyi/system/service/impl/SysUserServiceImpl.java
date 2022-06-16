@@ -61,6 +61,14 @@ public class SysUserServiceImpl implements ISysUserService
     @Autowired
     protected Validator validator;
 
+    @Override
+    public List<SysUser> selectByNickName(String nickName) {
+        if(StringUtils.isEmpty(nickName)){
+            return new ArrayList<>();
+        }
+        return userMapper.selectLikeNickName(nickName);
+    }
+
     /**
      * 根据条件分页查询用户列表
      * 

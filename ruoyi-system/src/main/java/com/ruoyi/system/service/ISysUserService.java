@@ -10,6 +10,8 @@ import com.ruoyi.common.core.domain.entity.SysUser;
  */
 public interface ISysUserService
 {
+
+    List<SysUser> selectByNickName(String nickName);
     /**
      * 根据条件分页查询用户列表
      * 

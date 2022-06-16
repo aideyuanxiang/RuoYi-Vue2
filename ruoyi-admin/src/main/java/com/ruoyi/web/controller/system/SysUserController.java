@@ -49,6 +49,14 @@ public class SysUserController extends BaseController
     @Autowired
     private ISysPostService postService;
 
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/nickName")
+    public AjaxResult findByNickNameLike(String nickName){
+        List<SysUser> sysUsers = userService.selectByNickName(nickName);
+        return AjaxResult.success(sysUsers);
+    }
+
+
     /**
      * 获取用户列表
      */

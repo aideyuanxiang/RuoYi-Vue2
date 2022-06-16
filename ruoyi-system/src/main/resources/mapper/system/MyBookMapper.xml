@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.MyBookMapper">
+
+
+    <resultMap id="BaseResultMap" type="myBook">
+        <id column="book_id" property="bookId" />
+        <result column="book_name" property="bookName" />
+        <result column="book_price" property="bookPrice" />
+        <result column="book_desc" property="bookDesc" />
+        <result column="book_url" property="bookUrl"/>
+        <result column="belong_to" property="belongTo"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="evaluate_id" property="evaluateId"/>
+    </resultMap>
+
+    <resultMap id="BookWithUser" type="myBook" extends="BaseResultMap">
+
+        <association property="sysUser" javaType="sysUser">
+            <id     property="userId"       column="user_id"      />
+            <result property="deptId"       column="dept_id"      />
+            <result property="userName"     column="user_name"    />
+            <result property="nickName"     column="nick_name"    />
+            <result property="email"        column="email"        />
+            <result property="phonenumber"  column="phonenumber"  />
+            <result property="sex"          column="sex"          />
+            <result property="avatar"       column="avatar"       />
+            <result property="password"     column="password"     />
+            <result property="status"       column="status"       />
+            <result property="delFlag"      column="del_flag"     />
+            <result property="loginIp"      column="login_ip"     />
+            <result property="loginDate"    column="login_date"   />
+            <result property="createBy"     column="create_by"    />
+            <result property="createTime"   column="create_time"  />
+            <result property="updateBy"     column="update_by"    />
+            <result property="updateTime"   column="update_time"  />
+            <result property="remark"       column="remark"       />
+        </association>
+    </resultMap>
+
+    <select id="findAll" resultMap="BookWithUser">
+
+        select * from my_book mb 
+        left join sys_user su on mb.belong_to =su.user_id
+        <where>
+            <if test="bookId!=null">book_id=#{bookId}</if>
+            <if test="bookName!=null and bookName!=' '">and book_name like concat('%','#{bookName}','%')</if>
+            <if test="belongTo!=null">and belong_to=#{belongTo}</if>
+            <if test="evaluateId!=null">and evaluate_id=#{evaluateId}</if>
+        </where>
+    </select>
+
+    <resultMap id="BookWithSubscribe" type="myBook" extends="BaseResultMap">
+        
+        <collection property="subscribes" ofType="mySubscribe"
+                    column="book_id" select="com.ruoyi.system.mapper.MySubscribeMapper.findByBookId"/>
+    </resultMap>
+
+    <select id="findByBookId" resultMap="BookWithSubscribe">
+
+        select *
+        from my_book where book_id=#{bookId}
+    </select>
+
+    <select id="findBookSubscribeCount" resultType="java.util.Map">
+        select * from(
+                    select mb.book_name bookName,count(subscribe_id) subCount
+                    from my_book mb
+                        left join my_subscribe ms on mb.book_id=ms.book_id
+                        group by mb.book_name
+                         )main
+        where main.subCount>0
+    </select>
+</mapper>

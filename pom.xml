@@ -186,6 +186,14 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!--旅游模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-travel</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -196,6 +204,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-travel</module>
     </modules>
     <packaging>pom</packaging>
 

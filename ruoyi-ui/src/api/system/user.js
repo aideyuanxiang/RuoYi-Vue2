@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
+export function listUserLikeNickName(query){
+  return request({
+    url:'/system/user/nickName',
+    method:'get',
+    params:query
+  })
+}
+
 // 查询用户列表
 export function listUser(query) {
   return request({

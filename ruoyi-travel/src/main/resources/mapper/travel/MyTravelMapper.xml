@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.travel.mapper.MyTravelMapper">
+    
+    <resultMap type="MyTravel" id="MyTravelResult">
+        <result property="travelId"    column="travel_id"    />
+        <result property="travelName"    column="travel_name"    />
+        <result property="destination"    column="destination"    />
+        <result property="departure"    column="departure"    />
+        <result property="price"    column="price"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="travelTransform"    column="travel_transform"    />
+    </resultMap>
+
+    <resultMap id="MyTravelMyTravelOrderResult" type="MyTravel" extends="MyTravelResult">
+        <collection property="myTravelOrderList" notNullColumn="sub_order_id" javaType="java.util.List" resultMap="MyTravelOrderResult" />
+    </resultMap>
+
+    <resultMap type="MyTravelOrder" id="MyTravelOrderResult">
+        <result property="orderId"    column="sub_order_id"    />
+        <result property="travelId"    column="sub_travel_id"    />
+        <result property="payedBy"    column="sub_payed_by"    />
+        <result property="payedDate"    column="sub_payed_date"    />
+        <result property="payedMoney"    column="sub_payed_money"    />
+    </resultMap>
+
+    <sql id="selectMyTravelVo">
+        select travel_id, travel_name, destination, departure, price, start_date, travel_transform from my_travel
+    </sql>
+
+    <select id="selectMyTravelList" parameterType="MyTravel" resultMap="MyTravelResult">
+        <include refid="selectMyTravelVo"/>
+        <where>  
+            <if test="travelName != null  and travelName != ''"> and travel_name like concat('%', #{travelName}, '%')</if>
+            <if test="destination != null  and destination != ''"> and destination = #{destination}</if>
+            <if test="departure != null  and departure != ''"> and departure = #{departure}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="travelTransform != null  and travelTransform != ''"> and travel_transform = #{travelTransform}</if>
+        </where>
+    </select>
+    
+    <select id="selectMyTravelByTravelId" parameterType="Long" resultMap="MyTravelMyTravelOrderResult">
+        select a.travel_id, a.travel_name, a.destination, a.departure, a.price, a.start_date, a.travel_transform,
+ b.order_id as sub_order_id, b.travel_id as sub_travel_id, b.payed_by as sub_payed_by, b.payed_date as sub_payed_date, b.payed_money as sub_payed_money
+        from my_travel a
+        left join my_travel_order b on b.travel_id = a.travel_id
+        where a.travel_id = #{travelId}
+    </select>
+        
+    <insert id="insertMyTravel" parameterType="MyTravel" useGeneratedKeys="true" keyProperty="travelId">
+        insert into my_travel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="travelName != null and travelName != ''">travel_name,</if>
+            <if test="destination != null">destination,</if>
+            <if test="departure != null">departure,</if>
+            <if test="price != null">price,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="travelTransform != null and travelTransform != ''">travel_transform,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="travelName != null and travelName != ''">#{travelName},</if>
+            <if test="destination != null">#{destination},</if>
+            <if test="departure != null">#{departure},</if>
+            <if test="price != null">#{price},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="travelTransform != null and travelTransform != ''">#{travelTransform},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMyTravel" parameterType="MyTravel">
+        update my_travel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="travelName != null and travelName != ''">travel_name = #{travelName},</if>
+            <if test="destination != null">destination = #{destination},</if>
+            <if test="departure != null">departure = #{departure},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="travelTransform != null and travelTransform != ''">travel_transform = #{travelTransform},</if>
+        </trim>
+        where travel_id = #{travelId}
+    </update>
+
+    <delete id="deleteMyTravelByTravelId" parameterType="Long">
+        delete from my_travel where travel_id = #{travelId}
+    </delete>
+
+    <delete id="deleteMyTravelByTravelIds" parameterType="String">
+        delete from my_travel where travel_id in 
+        <foreach item="travelId" collection="array" open="(" separator="," close=")">
+            #{travelId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMyTravelOrderByTravelIds" parameterType="String">
+        delete from my_travel_order where travel_id in 
+        <foreach item="travelId" collection="array" open="(" separator="," close=")">
+            #{travelId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMyTravelOrderByTravelId" parameterType="Long">
+        delete from my_travel_order where travel_id = #{travelId}
+    </delete>
+
+    <insert id="batchMyTravelOrder">
+        insert into my_travel_order( order_id, travel_id, payed_by, payed_date, payed_money) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.orderId}, #{item.travelId}, #{item.payedBy}, #{item.payedDate}, #{item.payedMoney})
+        </foreach>
+    </insert>
+</mapper>

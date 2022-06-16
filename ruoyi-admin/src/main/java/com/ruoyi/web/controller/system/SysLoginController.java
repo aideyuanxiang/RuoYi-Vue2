@@ -36,7 +36,7 @@ public class SysLoginController
 
     /**
      * 登录方法
-     * 
+     *
      * @param loginBody 登录信息
      * @return 结果
      */
@@ -45,8 +45,7 @@ public class SysLoginController
     {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
+        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode());
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }

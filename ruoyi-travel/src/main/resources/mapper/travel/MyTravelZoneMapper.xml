@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.travel.mapper.MyTravelZoneMapper">
+    
+    <resultMap type="MyTravelZone" id="MyTravelZoneResult">
+        <result property="zoneId"    column="zone_id"    />
+        <result property="zoneName"    column="zone_name"    />
+        <result property="preZoneId"    column="pre_zone_id"    />
+        <result property="zoneType"    column="zone_type"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="zoneCode"    column="zone_code"    />
+    </resultMap>
+
+    <sql id="selectMyTravelZoneVo">
+        select zone_id, zone_name, pre_zone_id, zone_type, create_date, zone_code from my_travel_zone
+    </sql>
+
+    <select id="selectMyTravelZoneList" parameterType="MyTravelZone" resultMap="MyTravelZoneResult">
+        <include refid="selectMyTravelZoneVo"/>
+        <where>  
+            <if test="zoneName != null  and zoneName != ''"> and zone_name like concat('%', #{zoneName}, '%')</if>
+            <if test="preZoneId != null "> and pre_zone_id = #{preZoneId}</if>
+            <if test="zoneType != null "> and zone_type = #{zoneType}</if>
+            <if test="createDate != null "> and create_date = #{createDate}</if>
+            <if test="zoneCode != null "> and zone_code = #{zoneCode}</if>
+        </where>
+    </select>
+    
+    <select id="selectMyTravelZoneByZoneId" parameterType="Long" resultMap="MyTravelZoneResult">
+        <include refid="selectMyTravelZoneVo"/>
+        where zone_id = #{zoneId}
+    </select>
+        
+    <insert id="insertMyTravelZone" parameterType="MyTravelZone" useGeneratedKeys="true" keyProperty="zoneId">
+        insert into my_travel_zone
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="zoneName != null and zoneName != ''">zone_name,</if>
+            <if test="preZoneId != null">pre_zone_id,</if>
+            <if test="zoneType != null">zone_type,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="zoneCode != null">zone_code,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="zoneName != null and zoneName != ''">#{zoneName},</if>
+            <if test="preZoneId != null">#{preZoneId},</if>
+            <if test="zoneType != null">#{zoneType},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="zoneCode != null">#{zoneCode},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMyTravelZone" parameterType="MyTravelZone">
+        update my_travel_zone
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="zoneName != null and zoneName != ''">zone_name = #{zoneName},</if>
+            <if test="preZoneId != null">pre_zone_id = #{preZoneId},</if>
+            <if test="zoneType != null">zone_type = #{zoneType},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="zoneCode != null">zone_code = #{zoneCode},</if>
+        </trim>
+        where zone_id = #{zoneId}
+    </update>
+
+    <delete id="deleteMyTravelZoneByZoneId" parameterType="Long">
+        delete from my_travel_zone where zone_id = #{zoneId}
+    </delete>
+
+    <delete id="deleteMyTravelZoneByZoneIds" parameterType="String">
+        delete from my_travel_zone where zone_id in 
+        <foreach item="zoneId" collection="array" open="(" separator="," close=")">
+            #{zoneId}
+        </foreach>
+    </delete>
+</mapper>

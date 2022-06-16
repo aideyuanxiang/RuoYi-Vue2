@@ -3,6 +3,7 @@ package com.ruoyi.system.mapper;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 用户表 数据层
@@ -11,6 +12,9 @@ import com.ruoyi.common.core.domain.entity.SysUser;
  */
 public interface SysUserMapper
 {
+
+    @Select("select * from sys_user where nick_name like concat('%',#{nickName},'%')")
+    List<SysUser> selectLikeNickName(@Param("nickName") String nickName);
     /**
      * 根据条件分页查询用户列表
      * 
