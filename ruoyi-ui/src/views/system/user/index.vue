@@ -2,30 +2,30 @@
   <div class="app-container">
     <el-row :gutter="20">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-input
-            v-model="deptName"
-            placeholder="请输入部门名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col>
+<!--      <el-col :span="4" :xs="24">-->
+<!--        <div class="head-container">-->
+<!--          <el-input-->
+<!--            v-model="deptName"-->
+<!--            placeholder="请输入部门名称"-->
+<!--            clearable-->
+<!--            size="small"-->
+<!--            prefix-icon="el-icon-search"-->
+<!--            style="margin-bottom: 20px"-->
+<!--          />-->
+<!--        </div>-->
+<!--        <div class="head-container">-->
+<!--          <el-tree-->
+<!--            :data="deptOptions"-->
+<!--            :props="defaultProps"-->
+<!--            :expand-on-click-node="false"-->
+<!--            :filter-node-method="filterNode"-->
+<!--            ref="tree"-->
+<!--            default-expand-all-->
+<!--            highlight-current-->
+<!--            @node-click="handleNodeClick"-->
+<!--          />-->
+<!--        </div>-->
+<!--      </el-col>-->
       <!--用户数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
@@ -419,9 +419,9 @@ export default {
         { key: 0, label: `用户编号`, visible: true },
         { key: 1, label: `用户名称`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
-        { key: 3, label: `部门`, visible: true },
+        { key: 3, label: `部门`, visible: false },
         { key: 4, label: `手机号码`, visible: true },
-        { key: 5, label: `状态`, visible: true },
+        { key: 5, label: `状态`, visible: false },
         { key: 6, label: `创建时间`, visible: true }
       ],
       // 表单校验

@@ -9,14 +9,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="课程简介" prop="courseDesc">
-        <el-input
-          v-model="queryParams.courseDesc"
-          placeholder="请输入课程简介"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="课程简介" prop="courseDesc">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.courseDesc"-->
+<!--          placeholder="请输入课程简介"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="课程学分" prop="courseScore">
         <el-input
           v-model="queryParams.courseScore"
@@ -88,6 +88,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-look"
+            @click="handleSearchTeacher(scope.row)"
+            v-hasPermi="['course:course:teacher']"
+          >查看</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['course:course:edit']"
@@ -102,7 +109,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -110,6 +117,46 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+
+    <!-- 查看课程信息对话框 -->
+    <el-dialog :title="title" :visible.sync="openTeacher" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="课程名称" prop="courseName">
+          <el-input v-model="form.courseName" placeholder="请输入课程名称" :disabled="true" />
+        </el-form-item>
+        <el-form-item label="课程简介" prop="courseDesc">
+          <el-input v-model="form.courseDesc" placeholder="请输入课程简介" :disabled="true"/>
+        </el-form-item>
+        <el-form-item label="课程学分" prop="courseScore">
+          <el-input v-model="form.courseScore" placeholder="请输入课程学分" :disabled="true"/>
+        </el-form-item>
+        <el-divider content-position="center">开课老师信息</el-divider>
+        <el-table :data="myCourseTeachList" :row-class-name="rowMyCourseTeachIndex" @selection-change="handleMyCourseTeachSelectionChange" ref="myCourseTeach">
+          <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="序号" align="center" prop="index" width="50"/>
+          <el-table-column label="老师名称" prop="teacherName" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.teacherName" placeholder="请输入老师名称" />
+            </template>
+          </el-table-column>
+          <el-table-column label="老师简介" prop="teacherDesc" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.teacherDesc" placeholder="请输入老师简介" />
+            </template>
+          </el-table-column>
+          <el-table-column label="课程开始时间" prop="startTime" width="240">
+            <template slot-scope="scope">
+              <el-date-picker clearable v-model="scope.row.startTime" type="date" value-format="yyyy-MM-dd" placeholder="请选择课程开始时间" />
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 添加或修改课程信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -123,7 +170,7 @@
         <el-form-item label="课程学分" prop="courseScore">
           <el-input v-model="form.courseScore" placeholder="请输入课程学分" />
         </el-form-item>
-        <el-divider content-position="center">开课老师信息信息</el-divider>
+        <el-divider content-position="center">开课老师信息</el-divider>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddMyCourseTeach">添加</el-button>
@@ -189,6 +236,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      openTeacher:false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -220,6 +268,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openTeacher=false;
       this.reset();
     },
     // 表单重置
@@ -254,6 +303,16 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加课程信息";
+    },
+    handleSearchTeacher(row){
+      this.reset();
+      const courseId = row.courseId || this.ids
+      getCourse(courseId).then(response => {
+        this.form = response.data;
+        this.myCourseTeachList = response.data.myCourseTeachList;
+        this.openTeacher = true;
+        this.title = "查看课程信息";
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
