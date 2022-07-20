@@ -340,7 +340,7 @@ export default {
               teacherName: this.chooseCourse.teacherName,
               startTime: this.chooseCourse.startTime,
               courseId: this.form.courseId,
-              userId: this.$store.state.user.index,
+              userId: this.$store.state.user.name,
               teacherId: this.chooseCourse.teacherId
             }
 

@@ -35,7 +35,7 @@ public class MyChooseCourse extends BaseEntity
 
     /** 用户ID */
     @Excel(name = "用户ID")
-    private Long userId;
+    private String userId;
 
     /** 老师ID */
     @Excel(name = "老师ID")
@@ -73,25 +73,25 @@ public class MyChooseCourse extends BaseEntity
         this.courseId = courseId;
     }
 
-    public Long getCourseId() 
+    public Long getCourseId()
     {
         return courseId;
     }
-    public void setUserId(Long userId) 
-    {
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Long getUserId() 
-    {
-        return userId;
-    }
-    public void setTeacherId(Long teacherId) 
+    public void setTeacherId(Long teacherId)
     {
         this.teacherId = teacherId;
     }
 
-    public Long getTeacherId() 
+    public Long getTeacherId()
     {
         return teacherId;
     }

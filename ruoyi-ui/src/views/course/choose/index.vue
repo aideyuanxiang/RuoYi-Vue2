@@ -25,14 +25,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户名称" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="用户名称" prop="userId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.userId"-->
+<!--          placeholder="请输入用户名称"-->
+<!--          :disabled="true"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="老师编号" prop="teacherId">
         <el-input
           v-model="queryParams.teacherId"
