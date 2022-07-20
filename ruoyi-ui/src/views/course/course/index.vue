@@ -132,28 +132,28 @@
           <el-input v-model="form.courseScore" placeholder="请输入课程学分" :disabled="true"/>
         </el-form-item>
         <el-divider content-position="center">开课老师信息</el-divider>
-        <el-table :data="myCourseTeachList" :row-class-name="rowMyCourseTeachIndex" @selection-change="handleMyCourseTeachSelectionChange" ref="myCourseTeach">
-          <el-table-column type="selection" width="50" align="center" />
+        <el-table :data="myCourseTeachList" :row-class-name="rowMyCourseTeachIndex"  highlight-current-row @current-change="handleCoureseSignal" ref="myCourseTeach">
+<!--          <el-table-column type="selection" width="50" align="center" />-->
           <el-table-column label="序号" align="center" prop="index" width="50"/>
           <el-table-column label="老师名称" prop="teacherName" width="150">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.teacherName" placeholder="请输入老师名称" />
+              <el-input v-model="scope.row.teacherName" placeholder="请输入老师名称" :disabled="true"/>
             </template>
           </el-table-column>
           <el-table-column label="老师简介" prop="teacherDesc" width="150">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.teacherDesc" placeholder="请输入老师简介" />
+              <el-input v-model="scope.row.teacherDesc" placeholder="请输入老师简介" :disabled="true"/>
             </template>
           </el-table-column>
           <el-table-column label="课程开始时间" prop="startTime" width="240">
             <template slot-scope="scope">
-              <el-date-picker clearable v-model="scope.row.startTime" type="date" value-format="yyyy-MM-dd" placeholder="请选择课程开始时间" />
+              <el-date-picker clearable v-model="scope.row.startTime" type="date" value-format="yyyy-MM-dd" placeholder="请选择课程开始时间" :disabled="true" />
             </template>
           </el-table-column>
         </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">确 定</el-button>
+        <el-button @click="submitCourse">选课</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -179,7 +179,7 @@
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteMyCourseTeach">删除</el-button>
           </el-col>
         </el-row>
-        <el-table :data="myCourseTeachList" :row-class-name="rowMyCourseTeachIndex" @selection-change="handleMyCourseTeachSelectionChange" ref="myCourseTeach">
+        <el-table :data="myCourseTeachList" :row-class-name="rowMyCourseTeachIndex"  @selection-change="handleMyCourseTeachSelectionChange" ref="myCourseTeach">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column label="序号" align="center" prop="index" width="50"/>
           <el-table-column label="老师名称" prop="teacherName" width="150">
@@ -209,7 +209,7 @@
 
 <script>
 import { listCourse, getCourse, delCourse, addCourse, updateCourse } from "@/api/course/course";
-
+import { listChoose, getChoose, delChoose, addChoose, updateChoose } from "@/api/course/choose";
 export default {
   name: "Course",
   data() {
@@ -237,6 +237,7 @@ export default {
       // 是否显示弹出层
       open: false,
       openTeacher:false,
+      chooseCourse:null,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -249,6 +250,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+      },
+      choose:{
+
       }
     };
   },
@@ -325,6 +329,32 @@ export default {
         this.title = "修改课程信息";
       });
     },
+    /** 选课按钮*/
+    submitCourse(){
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          console.log(this.chooseCourse)
+          console.log(this.chooseCourse.teacherName)
+            this.choose = {
+              chooseId: 0,
+              teacherName: this.chooseCourse.teacherName,
+              startTime: this.chooseCourse.startTime,
+              courseId: this.form.courseId,
+              userId: this.$store.state.user.index,
+              teacherId: this.chooseCourse.teacherId
+            }
+
+
+            addChoose(this.choose).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.openTeacher=false;
+              this.getList();
+            });
+
+        }
+      });
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -379,6 +409,13 @@ export default {
           return checkedMyCourseTeach.indexOf(item.index) == -1
         });
       }
+    },
+    /** 单选*/
+    handleCoureseSignal(val){
+      console.log(val)
+      this.chooseCourse=val
+      console.log(this.chooseCourse)
+      console.log(this.chooseCourse.teacherName)
     },
     /** 复选框选中数据 */
     handleMyCourseTeachSelectionChange(selection) {
