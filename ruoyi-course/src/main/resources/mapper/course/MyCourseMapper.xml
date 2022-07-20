@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.course.mapper.MyCourseMapper">
+    
+    <resultMap type="MyCourse" id="MyCourseResult">
+        <result property="courseId"    column="course_id"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="courseDesc"    column="course_desc"    />
+        <result property="courseScore"    column="course_score"    />
+    </resultMap>
+
+    <resultMap id="MyCourseMyCourseTeachResult" type="MyCourse" extends="MyCourseResult">
+        <collection property="myCourseTeachList" notNullColumn="sub_teacher_id" javaType="java.util.List" resultMap="MyCourseTeachResult" />
+    </resultMap>
+
+    <resultMap type="MyCourseTeach" id="MyCourseTeachResult">
+        <result property="teacherId"    column="sub_teacher_id"    />
+        <result property="teacherName"    column="sub_teacher_name"    />
+        <result property="teacherDesc"    column="sub_teacher_desc"    />
+        <result property="startTime"    column="sub_start_time"    />
+        <result property="courseId"    column="sub_course_id"    />
+    </resultMap>
+
+    <sql id="selectMyCourseVo">
+        select course_id, course_name, course_desc, course_score from my_course
+    </sql>
+
+    <select id="selectMyCourseList" parameterType="MyCourse" resultMap="MyCourseResult">
+        <include refid="selectMyCourseVo"/>
+        <where>  
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="courseDesc != null  and courseDesc != ''"> and course_desc = #{courseDesc}</if>
+            <if test="courseScore != null "> and course_score = #{courseScore}</if>
+        </where>
+    </select>
+    
+    <select id="selectMyCourseByCourseId" parameterType="Long" resultMap="MyCourseMyCourseTeachResult">
+        select a.course_id, a.course_name, a.course_desc, a.course_score,
+ b.teacher_id as sub_teacher_id, b.teacher_name as sub_teacher_name, b.teacher_desc as sub_teacher_desc, b.start_time as sub_start_time, b.course_id as sub_course_id
+        from my_course a
+        left join my_course_teach b on b.course_id = a.course_id
+        where a.course_id = #{courseId}
+    </select>
+        
+    <insert id="insertMyCourse" parameterType="MyCourse" useGeneratedKeys="true" keyProperty="courseId">
+        insert into my_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseName != null">course_name,</if>
+            <if test="courseDesc != null">course_desc,</if>
+            <if test="courseScore != null">course_score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseName != null">#{courseName},</if>
+            <if test="courseDesc != null">#{courseDesc},</if>
+            <if test="courseScore != null">#{courseScore},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMyCourse" parameterType="MyCourse">
+        update my_course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseName != null">course_name = #{courseName},</if>
+            <if test="courseDesc != null">course_desc = #{courseDesc},</if>
+            <if test="courseScore != null">course_score = #{courseScore},</if>
+        </trim>
+        where course_id = #{courseId}
+    </update>
+
+    <delete id="deleteMyCourseByCourseId" parameterType="Long">
+        delete from my_course where course_id = #{courseId}
+    </delete>
+
+    <delete id="deleteMyCourseByCourseIds" parameterType="String">
+        delete from my_course where course_id in 
+        <foreach item="courseId" collection="array" open="(" separator="," close=")">
+            #{courseId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMyCourseTeachByCourseIds" parameterType="String">
+        delete from my_course_teach where course_id in 
+        <foreach item="courseId" collection="array" open="(" separator="," close=")">
+            #{courseId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMyCourseTeachByCourseId" parameterType="Long">
+        delete from my_course_teach where course_id = #{courseId}
+    </delete>
+
+    <insert id="batchMyCourseTeach">
+        insert into my_course_teach( teacher_id, teacher_name, teacher_desc, start_time, course_id) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.teacherId}, #{item.teacherName}, #{item.teacherDesc}, #{item.startTime}, #{item.courseId})
+        </foreach>
+    </insert>
+</mapper>

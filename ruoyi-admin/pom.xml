@@ -72,6 +72,12 @@
             <artifactId>ruoyi-travel</artifactId>
         </dependency>
 
+        <!--课程模块-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-course</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
